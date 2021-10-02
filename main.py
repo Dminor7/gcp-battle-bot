@@ -189,9 +189,13 @@ app = Flask(__name__)
 
 @app.route("/", methods=['POST'])
 def move():
-    request.get_data()
-    logging.info(request.json)
-    return make_a_move(arena=request.json)
+    data = request.json
+    try:
+        bot_move = make_a_move(arena=data)
+    except Exception:
+        bot_move = "T"
+
+    return bot_move
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0',port=int(os.environ.get('PORT', 8080)))
