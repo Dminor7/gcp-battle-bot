@@ -144,7 +144,7 @@ def make_a_move(arena):
         max_bots_in_range = back_bots_in_range
     
     
-    if max_bots_in_range > 0:
+    if max_bots_in_range >= 0:
         if max_bots_in_range == bots_in_range:
             result_cmd = "T"
         elif max_bots_in_range == left_bots_in_range:
