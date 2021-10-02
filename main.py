@@ -80,7 +80,7 @@ def get_line(bot_state, vector):
         line[2] = PlayerState(bot_state.get("x") + 3,bot_state.get("y"))
     if vector == 4:
         line[0] = PlayerState(bot_state.get("x") - 1,bot_state.get("y"))
-        line[1] = PlayerState(bot_state.get("x") + 2,bot_state.get("y"))
+        line[1] = PlayerState(bot_state.get("x") - 2,bot_state.get("y"))
         line[2] = PlayerState(bot_state.get("x") - 3,bot_state.get("y"))
     return line
     
