@@ -4,6 +4,8 @@ import random
 from flask import Flask, request
 from collections import namedtuple
 from functools import cmp_to_key
+import random
+
 
 PlayerState = namedtuple('PlayerState', 'x y')
 PlayerState.__eq__ = lambda source, target: source.x == target.x and source.y == target.y
@@ -111,7 +113,7 @@ def find_closest_bot(bot_state, arena):
     if len(players) > 0:
         return players[0]
     else:
-        return PlayerState(bot_state.get("x"), bot_state.get("y"))
+        return random.choice(player_states)
 
 
     
