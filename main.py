@@ -24,7 +24,7 @@ def turn_left(vector: int):
     return result
 
 def turn_right(vector: int):
-    result = vector - 1
+    result = vector + 1
     if result > 4:
         result = 1
     return result
@@ -192,10 +192,8 @@ app = Flask(__name__)
 @app.route("/", methods=['POST'])
 def move():
     data = request.json
-    try:
-        bot_move = make_a_move(arena=data)
-    except Exception:
-        bot_move = "F"
+    bot_move = make_a_move(arena=data)
+    
 
     return bot_move
 
