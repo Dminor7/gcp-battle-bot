@@ -179,7 +179,7 @@ def make_a_move(arena):
             if delta_y > 3:
                 result_cmd = move_down(bot_direction)
             else:
-                result_cmd = move_up
+                result_cmd = move_up(bot_direction)
 
     return result_cmd
 
