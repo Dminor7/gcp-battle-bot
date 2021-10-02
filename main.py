@@ -195,7 +195,7 @@ def move():
     try:
         bot_move = make_a_move(arena=data)
     except Exception:
-        bot_move = "T"
+        bot_move = "F"
 
     return bot_move
 
