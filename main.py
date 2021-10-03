@@ -1,70 +1,55 @@
 import os
 import random
+import logging
+import json
+
 from flask import Flask, request
 
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-moves = ['F', 'T', 'L', 'R']
-
-
-def get_bot(all_data):
-    bot = all_data['_links']['self']['href']
-    bot_state = all_data["arena"]["state"][bot]
-
-    return bot_state, bot
-
-
-
-def get_command(bot_direction, bot_x, bot_y, arena_x, arena_y, all_user_data):
-    if bot_direction == "N":
-        if bot_y == 0:
-            return "R"
-        elif is_someone_present([bot_x], [bot_y-1, bot_y-2, bot_y-3], all_user_data):
-            return "T"
-        else:
-            return "F"
-
-    elif bot_direction == "S":
-        if bot_y == arena_y - 1:
-            return "R"
-        elif is_someone_present([bot_x], [bot_y+1, bot_y+2, bot_y+3], all_user_data):
-            return "T"
-        else:
-            return "F"
-
-    elif bot_direction == "E":
-        if bot_x == arena_x - 1:
-            return "R"
-        elif is_someone_present([bot_x+1, bot_x+2, bot_x+3], [bot_y], all_user_data):
-            return "T"
-        else:
-            return "F"
-
-    elif bot_direction == "W":
-        if bot_x == 0:
-            return "R"
-        elif is_someone_present([bot_x-1, bot_x-2, bot_x-3], [bot_y], all_user_data):
-            return "T"
-        else:
-            return "F"
-    else:
-        return moves[random.randrange(len(moves))]
-
-
-def is_someone_present(possible_points_x, possible_points_y, all_user_data):
-    for _, user_states in all_user_data.items():
-        if user_states["x"] in possible_points_x and user_states["y"] in possible_points_y:
-            return True
-    else:
-        return False
-
 
 @app.route("/", methods=['POST'])
 def move():
-    request.get_data()
-    bot_state, _ = get_bot(request.json)
-    arena_x, arena_y = request.json["arena"]["dims"]
-    return get_command(bot_state['direction'], bot_state['x'], bot_state['y'], arena_x, arena_y, request.json["arena"]["state"])
+
+    stateInitial = json.loads(request.get_data(as_text=True))
+    # print(stateInitial)
+
+    state=stateInitial["arena"]["state"]
+
+    state = dict(state)
+    # print(state)
+
+    #initialisation
+    myLoc=[0,0]
+    myURL=stateInitial["_links"]["self"]["href"]
+    dimensions=stateInitial["arena"]["dims"]
+    # print(dimensions)
+
+    myLoc[0]=state[myURL]["x"]
+    myLoc[1]=state[myURL]["y"]
+    myDirection=state[myURL]["direction"]
+
+    variable = next_move(stateInitial, state, myLoc, myDirection, myURL, dimensions)
+
+    return variable
+
+def next_move(stateInitial, state, myLoc, myDirection, myURL, dimensions):
+    my_x = myLoc[0]
+    my_y = myLoc[1]
+    list_copy = state.copy()
+    del list_copy[myURL]
+    for i in list_copy.values():
+        if(((myDirection=='N' and (my_y - i["y"] <= 3 and my_y - i["y"] > 0) and i["x"] == my_x) or \
+           (myDirection=='S' and (i["y"] - my_y <= 3 and i["y"] - my_y > 0) and i["x"] == my_x) or \
+           (myDirection=='W' and (my_x - i["x"] <= 3 and my_x - i["x"] > 0) and i["y"] == my_y) or \
+           (myDirection=='E' and (i["x"] - my_x <= 3 and i["x"] - my_x > 0) and i["y"] == my_y))):
+        
+            return 'T'
+        else:
+            return random.choice(['F','L','R'])
+
 
 
 if __name__ == "__main__":
